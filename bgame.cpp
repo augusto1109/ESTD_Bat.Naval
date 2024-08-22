@@ -9,7 +9,7 @@ const int colunas = 15;
 int main() {
   int escolhamodo;
 
-  cout << "========================" << endl;
+  cout << "=======================" << endl;
   cout << "Escolha o modo de jogo: " << endl;
   cout << "1. PvP" << endl;
   cout << "2. PvBot" << endl;
@@ -23,7 +23,7 @@ int main() {
 
   case 1: {
 
-    cout << "Escolheu PvP" << endl;
+    cout << "Escolheu PvP\n" << endl;
 
     char tabuleiro[linhas][colunas];
 
@@ -33,17 +33,17 @@ int main() {
       }
     }
 
-    cout << setw(4) << " ";
+    cout << "    ";
     for (int i = 1; i <= colunas; i++) {
-      cout << i << setw(2) << " ";
+      cout << setw(3) << i;
     }
 
     cout << endl;
 
     for (int i = 0; i < linhas; i++) {
-      cout << static_cast<char>('A' + i) << " | ";
+      cout << " " << static_cast<char>('A' + i) << " |";
       for (int j = 0; j < colunas; j++) {
-        cout << tabuleiro[i][j] << setw(2) << " ";
+        cout << setw(3) << tabuleiro[i][j];
       }
 
       cout << endl;
