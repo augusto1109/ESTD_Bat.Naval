@@ -1,35 +1,9 @@
 #include <iostream>
-#include <vector>
-
 
 using namespace std;
 
-const int rows = 16;
-const int cols = 15;
-
-void initializeBoard(vector<vector<char>>& board) {
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 1; j < rows; ++j) {
-            board[i][j] = '0';
-        }
-    }
-}
-
-void printBoard(const vector<vector<char>>& board) {
-    cout << "  ";
-    for (int i = 1; i <= cols; ++i) {
-        cout << i << " ";
-    }
-    cout << endl;
-    
-    for (int i = 1; i < rows; ++i) {
-        cout << i << " ";
-        for (int j = 0; j < rows; ++j) {
-            cout << board[i][j] << " ";
-        }
-        cout << endl;
-    }
-}
+const int linhas = 15;
+const int colunas = 15;
 
 int main () {
     int escolha;
@@ -50,9 +24,29 @@ int main () {
             
             cout << "Escolheu PvP" << endl;
 
-            vector<vector<char>> board(rows, vector<char>(cols));
-            initializeBoard(board);
-            printBoard(board);
+            char tabuleiro[linhas][colunas];
+
+            for (int i = 0; i < linhas; i++) {
+                for (int j = 0; j < colunas; j++) {
+                    tabuleiro[i][j] = '0';
+                }
+            }
+
+            cout << " ";
+            for (int i = 1; i <= colunas; i++) {
+                cout << i << " ";
+            }
+
+            cout << endl;
+            
+            for (int i = 0; i < linhas; i++) {
+                cout << static_cast<char>('A' + i) << " ";
+                for (int j = 0; j < colunas; j++) {
+                    cout << tabuleiro[i][j] << " ";
+                }
+            
+            cout << endl;
+            }
             break;
         }
 
