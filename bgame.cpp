@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <iostream>
+#include <limits>
 
 using namespace std;
 
@@ -58,9 +59,16 @@ void posicionarNavio(char tabuleiro[b_size][b_size], int tamanho) {
   bool posicionado = false;
 
   while (!posicionado) {
-    cout << "Posicione o navio de tamanho " << tamanho
-         << " (linha coluna direcao [H/V]): ";
+    cout << endl << "Posicione o navio de tamanho " << tamanho << " (linha coluna direcao [H/V]): ";
     cin >> linhaChar >> y >> direcao;
+
+    if (cin.fail()) {
+      cout << "Entrada inválida. Tente novamente." << endl;
+      cin.clear();
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      continue;
+    }
+
     x = linhaChar - 'A';
     y -= 1;
 
@@ -90,89 +98,102 @@ void posicionarNavio(char tabuleiro[b_size][b_size], int tamanho) {
 int main() {
 
   int escolhajogo;
+  bool executando = true;
 
-  cout << "================" << endl;
-  cout << "Escolha o jogo: " << endl;
-  cout << "1. Batalha naval" << endl;
-  cout << "2. Jogo 2" << endl;
-  cout << "3. Sair" << endl;
-  cout << "================" << endl;
-  cout << "Digite sua escolha: ";
-  cin >> escolhajogo;
+  while (executando) {
 
-  switch (escolhajogo) {
-
-  case 1: {
-
-    cout << endl;
-    cout << "* BATALHA NAVAL *" << endl;
-    int escolhamodo;
-
-    cout << "=======================" << endl;
-    cout << "Escolha o modo de jogo: " << endl;
-    cout << "1. PvP" << endl;
-    cout << "2. PvBot" << endl;
-    cout << "3. BotvBot" << endl;
-    cout << "4. Sair" << endl;
-    cout << "=====================" << endl;
+    cout << "================" << endl;
+    cout << "Escolha o jogo: " << endl;
+    cout << "1. Batalha naval" << endl;
+    cout << "2. Jogo 2" << endl;
+    cout << "3. Sair" << endl;
+    cout << "================" << endl;
     cout << "Digite sua escolha: ";
-    cin >> escolhamodo;
+    cin >> escolhajogo;
 
-    switch (escolhamodo) {
+    switch (escolhajogo) {
 
     case 1: {
 
       cout << endl;
-      cout << "* Escolheu PvP *\n" << endl;
+      cout << "* BATALHA NAVAL *" << endl;
+      int escolhamodo;
 
-      char tabuleiro[b_size][b_size];
-      inicializaTabuleiro(tabuleiro);
+      cout << "=======================" << endl;
+      cout << "Escolha o modo de jogo: " << endl;
+      cout << "1. PvP" << endl;
+      cout << "2. PvBot" << endl;
+      cout << "3. BotvBot" << endl;
+      cout << "4. Sair" << endl;
+      cout << "=====================" << endl;
+      cout << "Digite sua escolha: ";
+      cin >> escolhamodo;
 
-      int numNavios = 3;
-      cout << "O jogo começou!!" << endl;
+      switch (escolhamodo) {
 
-      imprimeTabuleiro(tabuleiro);
-      posicionarNavio(tabuleiro, numNavios);
-      imprimeTabuleiro(tabuleiro);
+      case 1: {
 
-      break;
+        cout << endl;
+        cout << "* Escolheu PvP *\n" << endl;
+
+        char tabuleiro[b_size][b_size];
+        inicializaTabuleiro(tabuleiro);
+
+        int numNavios = 3;
+        cout << "O jogo começou!!\n" << endl;
+
+        imprimeTabuleiro(tabuleiro);
+        posicionarNavio(tabuleiro, numNavios);
+        imprimeTabuleiro(tabuleiro);
+        cout << endl;
+
+        posicionarNavio(tabuleiro, numNavios);
+        imprimeTabuleiro(tabuleiro);
+        cout << endl;
+
+        posicionarNavio(tabuleiro, numNavios);
+        imprimeTabuleiro(tabuleiro);
+        cout << endl;
+
+        break;
+      }
+
+      case 2:
+
+        cout << "Escolheu a opcao 2" << endl;
+        break;
+
+      case 3:
+
+        cout << "Escolheu a opcao 3" << endl;
+        break;
+
+      case 4:
+
+        cout << "Saindo do programa..." << endl;
+        break;
+
+      default:
+
+        cout << "Opcao inválida!" << endl;
+        break;
+      }
     }
 
     case 2:
 
-      cout << "Escolheu a opcao 2" << endl;
+      cout << "Nada ainda..." << endl;
       break;
 
     case 3:
 
-      cout << "Escolheu a opcao 3" << endl;
-      break;
-
-    case 4:
-
-      cout << "Saindo do programa..." << endl;
+      cout << "Saindo..." << endl;
       break;
 
     default:
-      cout << "Opcao inválida!" << endl;
+      cout << "Opção inválida." << endl;
+
+      return 0;
     }
-
-    break;
   }
-
-  case 2:
-
-    cout << "Nada ainda..." << endl;
-    break;
-
-  case 3:
-
-    cout << "Saindo..." << endl;
-    break;
-
-  default:
-    cout << "Opção inválida." << endl;
-  }
-
-  return 0;
 }
