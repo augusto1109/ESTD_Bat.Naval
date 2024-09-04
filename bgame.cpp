@@ -59,7 +59,9 @@ void posicionarNavio(char tabuleiro[b_size][b_size], int tamanho) {
   bool posicionado = false;
 
   while (!posicionado) {
-    cout << endl << "Posicione o navio de tamanho " << tamanho << " (linha coluna direcao [H/V]): ";
+    cout << endl
+         << "Posicione o navio de tamanho " << tamanho
+         << " (linha coluna direcao [H/V]): ";
     cin >> linhaChar >> y >> direcao;
 
     if (cin.fail()) {
@@ -139,22 +141,15 @@ int main() {
         char tabuleiro[b_size][b_size];
         inicializaTabuleiro(tabuleiro);
 
-        int numNavios = 3;
         cout << "O jogo começou!!\n" << endl;
 
         imprimeTabuleiro(tabuleiro);
-        posicionarNavio(tabuleiro, numNavios);
-        imprimeTabuleiro(tabuleiro);
-        cout << endl;
 
-        posicionarNavio(tabuleiro, numNavios);
-        imprimeTabuleiro(tabuleiro);
-        cout << endl;
-
-        posicionarNavio(tabuleiro, numNavios);
-        imprimeTabuleiro(tabuleiro);
-        cout << endl;
-
+        int navios[5] = {2, 2, 3, 3, 4};
+        for (int i = 0; i < 5; i++) {
+          posicionarNavio(tabuleiro, navios[i]);
+          imprimeTabuleiro(tabuleiro);
+        }
         break;
       }
 
