@@ -1,0 +1,3 @@
+bool posicaoEAdjacente(int linhaAnterior, int colunaAnterior, int linhaAtual, int colunaAtual) {
+  return (abs(linhaAnterior - linhaAtual) == 1 && colunaAnterior == colunaAtual) ||(abs(colunaAnterior - colunaAtual) == 1 && linhaAnterior == linhaAtual);  
+}
