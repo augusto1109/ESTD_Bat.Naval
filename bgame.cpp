@@ -31,69 +31,57 @@ void imprimeTabuleiro(char tabuleiro[b_size][b_size]) {
   }
 }
 
-bool podePosicionarNavio(char tabuleiros[b_size][b_size], int linha, int coluna,
-                         int tamanho, char direcao) {
-  if (direcao == 'H') {
-    if (coluna + tamanho > b_size)
-      return false;
-
-    for (int i = 0; i < tamanho; i++) {
-      if (tabuleiros[linha][coluna + i] != '0')
-        return false;
-    }
-  } else if (direcao == 'V') {
-    if (linha + tamanho > b_size)
-      return false;
-    for (int i = 0; i < tamanho; i++) {
-      if (tabuleiros[linha + i][coluna] != '0')
-        return false;
-    }
-  }
-  return true;
+bool podePosicionarNavioManual(char tabuleiro[b_size][b_size], int linha,
+                               int coluna) {
+  return tabuleiro[linha][coluna] == '0';
 }
 
-void posicionarNavio(char tabuleiro[b_size][b_size], int tamanho) {
+bool posicaoEhAdjacente(int linhaAnterior, int colunaAnterior, int linhaAtual,
+                        int colunaAtual) {
+  return (abs(linhaAnterior - linhaAtual) == 1 &&
+          colunaAnterior == colunaAtual) ||
+         (abs(colunaAnterior - colunaAtual) == 1 &&
+          linhaAnterior == linhaAtual);
+}
+
+void posicionarNavioManual(char tabuleiro[b_size][b_size], int tamanho) {
   char linhaChar;
   int x, y;
-  char direcao;
   bool posicionado = false;
 
-  while (!posicionado) {
-    cout << endl
-         << "Posicione o navio de tamanho " << tamanho
-         << " (linha coluna direcao [H/V]): ";
-    cin >> linhaChar >> y >> direcao;
+  int linhaAnterior = -1, colunaAnterior = -1;
+  for (int i = 0; i < tamanho; i++) {
 
-    if (cin.fail()) {
-      cout << "Entrada inválida. Tente novamente." << endl;
-      cin.clear();
-      cin.ignore(numeric_limits<streamsize>::max(), '\n');
-      continue;
-    }
+    while (!posicionado) {
+      cout << endl
+           << "Posicione a parte " << i + 1 << " do navio (linha coluna): ";
+      cin >> linhaChar >> y;
 
-    x = linhaChar - 'A';
-    y -= 1;
-
-    if (direcao != 'H' && direcao != 'V') {
-      cout << "Direcao invalida. Tente novamente." << endl;
-      continue;
-    }
-
-    if (x >= 0 && x < b_size && y >= 0 && y < b_size &&
-        podePosicionarNavio(tabuleiro, x, y, tamanho, direcao)) {
-      if (direcao == 'H') {
-        for (int i = 0; i < tamanho; i++) {
-          tabuleiro[x][y + i] = 'N';
-        }
-      } else if (direcao == 'V') {
-        for (int i = 0; i < tamanho; i++) {
-          tabuleiro[x + i][y] = 'N';
-        }
+      if (cin.fail()) {
+        cout << "Entrada inválida. Tente novamente." << endl;
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        continue;
       }
-      posicionado = true;
-    } else {
-      cout << "Posicao invalida. Tente novamente." << endl;
+
+      x = linhaChar - 'A';
+      y -= 1;
+
+      if (x >= 0 && x < b_size && y >= 00 && y < b_size &&
+          podePosicionarNavioManual(tabuleiro, x, y)) {
+        if (i == 0 || posicaoEhAdjacente(linhaAnterior, colunaAnterior, x, y)) {
+          tabuleiro[x][y] = 'N';
+          linhaAnterior = x;
+          colunaAnterior = y;
+          posicionado = true;
+        } else {
+          cout << "Posição inválida. Tente novamente." << endl;
+        }
+      } else {
+        cout << "Posição inválida ou já ocupada. Tente novamente." << endl;
+      }
     }
+    posicionado = false;
   }
 }
 
@@ -147,7 +135,7 @@ int main() {
 
         int navios[5] = {2, 2, 3, 3, 4};
         for (int i = 0; i < 5; i++) {
-          posicionarNavio(tabuleiro, navios[i]);
+          posicionarNavioManual(tabuleiro, navios[i]);
           imprimeTabuleiro(tabuleiro);
         }
         break;
