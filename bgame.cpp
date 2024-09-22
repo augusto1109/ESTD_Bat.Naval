@@ -1,6 +1,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <vector>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -21,7 +22,8 @@ void inicializaTabuleiro(char tabuleiro[b_size][b_size]) {
   }
 }
 
-void imprimeTabuleiro(const char tabuleiro[b_size][b_size]) {
+void imprimeTabuleiro(const char tabuleiro[b_size][b_size],
+                      bool revelarNavios = false) {
   cout << endl;
   cout << "    ";
   for (int i = 1; i <= b_size; i++) {
@@ -31,7 +33,11 @@ void imprimeTabuleiro(const char tabuleiro[b_size][b_size]) {
   for (int i = 0; i < b_size; i++) {
     cout << " " << (char)('A' + i) << " |";
     for (int j = 0; j < b_size; j++) {
-      cout << setw(3) << tabuleiro[i][j];
+      if (!revelarNavios && tabuleiro[i][j] == 'N') {
+        cout << setw(3) << '0';
+      } else {
+        cout << setw(3) << tabuleiro[i][j];
+      }
     }
     cout << endl;
   }
@@ -44,10 +50,8 @@ bool podePosicionarNavioManual(const char tabuleiro[b_size][b_size], int linha,
 
 bool posicaoEhAdjacente(int linhaAnterior, int colunaAnterior, int linhaAtual,
                         int colunaAtual) {
-  return (abs(linhaAnterior - linhaAtual) == 1 &&
-          colunaAnterior == colunaAtual) ||
-         (abs(colunaAnterior - colunaAtual) == 1 &&
-          linhaAnterior == linhaAtual);
+  return (abs(linhaAnterior - linhaAtual) <= 1 &&
+          abs(colunaAnterior - colunaAtual) <= 1);
 }
 
 void posicionarNavioManual(char tabuleiro[b_size][b_size], int tamanho,
@@ -56,13 +60,16 @@ void posicionarNavioManual(char tabuleiro[b_size][b_size], int tamanho,
   int x, y;
   bool posicionado = false;
 
-  int linhaAnterior = -1, colunaAnterior = -1;
+  vector<pair<int, int>> partesNavio;
+
   for (int i = 0; i < tamanho; i++) {
     while (!posicionado) {
       cout << endl
            << jogador << ", posicione a parte " << i + 1
            << " do navio de tamanho " << tamanho << " (linha coluna): ";
       cin >> linhaChar >> y;
+
+      linhaChar = toupper(linhaChar);
 
       if (cin.fail()) {
         cout << "Entrada inválida. Tente novamente." << endl;
@@ -76,10 +83,10 @@ void posicionarNavioManual(char tabuleiro[b_size][b_size], int tamanho,
 
       if (x >= 0 && x < b_size && y >= 0 && y < b_size &&
           podePosicionarNavioManual(tabuleiro, x, y)) {
-        if (i == 0 || posicaoEhAdjacente(linhaAnterior, colunaAnterior, x, y)) {
+        if (i == 0 || posicaoEhAdjacente(partesNavio.back().first,
+                                         partesNavio.back().second, x, y)) {
           tabuleiro[x][y] = 'N';
-          linhaAnterior = x;
-          colunaAnterior = y;
+          partesNavio.push_back(make_pair(x, y));
           posicionado = true;
         } else {
           cout << "Posição inválida. Tente novamente." << endl;
@@ -90,6 +97,28 @@ void posicionarNavioManual(char tabuleiro[b_size][b_size], int tamanho,
     }
     posicionado = false;
   }
+}
+
+bool atirar(char tabuleiro[b_size][b_size], int linha, int coluna) {
+  if (tabuleiro[linha][coluna] == 'N') {
+    tabuleiro[linha][coluna] = 'X';
+    return true;
+  } else if (tabuleiro[linha][coluna] == '0') {
+    tabuleiro[linha][coluna] = 'M';
+  }
+  return false;
+}
+
+int contarPartesNaviosRestantes(const char tabuleiro[b_size][b_size]) {
+  int partesRestantes = 0;
+  for (int i = 0; i < b_size; i++) {
+    for (int j = 0; j < b_size; j++) {
+      if (tabuleiro[i][j] == 'N') {
+        partesRestantes++;
+      }
+    }
+  }
+  return partesRestantes;
 }
 
 void limparTela() {
@@ -167,11 +196,11 @@ int main() {
         cout << "O jogo começou!!\n" << endl;
 
         cout << "Jogador 1, posicione seus navios:" << endl;
-        imprimeTabuleiro(tabuleiro1);
+        imprimeTabuleiro(tabuleiro1, true);
         for (int i = 0; i < 5; i++) {
           posicionarNavioManual(tabuleiro1, navios[i], "Jogador 1");
           cout << endl << "Tabuleiro atual:" << endl;
-          imprimeTabuleiro(tabuleiro1);
+          imprimeTabuleiro(tabuleiro1, true);
         }
 
         cout << "\nJogador 1 posicionou seus navios. Agora, as tabelas não são "
@@ -186,13 +215,97 @@ int main() {
         limparTela();
 
         cout << "Jogador 2, posicione seus navios:" << endl;
-        imprimeTabuleiro(tabuleiro2);
+        imprimeTabuleiro(tabuleiro2, true);
         for (int i = 0; i < 5; i++) {
           posicionarNavioManual(tabuleiro2, navios[i], "Jogador 2");
           cout << endl << "Tabuleiro atual:" << endl;
-          imprimeTabuleiro(tabuleiro2);
+          imprimeTabuleiro(tabuleiro2, true);
         }
         cout << "Jogador 2 posicionou seus navios." << endl;
+
+        limparTela();
+        bool jogoAtivo = true;
+
+        while (jogoAtivo) {
+          char linhaChar;
+          int x, y;
+
+          while (true) {
+            cout << "\nJogador 1, atire no tabuleiro do Jogador 2 (linha "
+                    "coluna): ";
+            cin >> linhaChar >> y;
+
+            linhaChar = toupper(linhaChar);
+            x = linhaChar - 'A';
+
+            if (cin.fail()) {
+              cout << "Entrada inválida. Tente novamente." << endl;
+              cin.clear();
+              cin.ignore(numeric_limits<streamsize>::max(), '\n');
+              continue;
+            }
+
+            y -= 1;
+
+            if (x >= 0 && x < b_size && y >= 0 && y < b_size) {
+              break;
+            } else {
+              cout << "Posição inválida. Tente novamente." << endl;
+            }
+          }
+
+          if (atirar(tabuleiro2, x, y)) {
+            cout << "Acertou!" << endl;
+          } else {
+            cout << "Errou!" << endl;
+          }
+          cout << "\nTabuleiro atual do adversário(Jogador2):" << endl;
+          imprimeTabuleiro(tabuleiro2, false);
+
+          if (contarPartesNaviosRestantes(tabuleiro2) == 0) {
+            cout << "\nJogador 1 venceu!\n" << endl;
+            jogoAtivo = false;
+            break;
+          }
+
+          while (true) {
+            cout << "\nJogador 2, atire no tabuleiro do Jogador 1 (linha "
+                    "coluna): ";
+            cin >> linhaChar >> y;
+
+            linhaChar = toupper(linhaChar);
+            x = linhaChar - 'A';
+
+            if (cin.fail()) {
+              cout << "Entrada inválida. Tente novamente." << endl;
+              cin.clear();
+              cin.ignore(numeric_limits<streamsize>::max(), '\n');
+              continue;
+            }
+
+            y -= 1;
+
+            if (x >= 0 && x < b_size && y >= 0 && y < b_size) {
+              break;
+            } else {
+              cout << "Posição inválida. Tente novamente." << endl;
+            }
+          }
+
+          if (atirar(tabuleiro1, x, y)) {
+            cout << "Acertou!" << endl;
+          } else {
+            cout << "Errou!" << endl;
+          }
+          cout << "\nTabuleiro atual do adversário (Jogador1):" << endl;
+          imprimeTabuleiro(tabuleiro1, false);
+
+          if (contarPartesNaviosRestantes(tabuleiro1) == 0) {
+            cout << "\nJogador 2 venceu!\n" << endl;
+            jogoAtivo = false;
+            break;
+          }
+        }
         break;
       }
 
